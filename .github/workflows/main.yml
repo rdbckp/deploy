@@ -1,0 +1,27 @@
+name: Telegram to GDrive
+on:
+  workflow_dispatch:
+    inputs:
+      file_url:
+        description: 'Link download dari Telegram'
+        required: true
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download File from Telegram Link
+        run: |
+          # Link ini bisa didapet dari bot semacam @PublicURL_Bot atau link manual
+          wget "${{ github.event.inputs.file_url }}" -O file_target
+
+      - name: Upload to GDrive
+        uses: adityak74/google-drive-upload-git-action@main
+        with:
+          credentials: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+          filename: "file_target"
+          folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
+          overwrite: "true"
