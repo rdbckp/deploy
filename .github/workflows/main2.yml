@@ -1,0 +1,26 @@
+name: Tele to GDrive Rclone
+on:
+  workflow_dispatch:
+    inputs:
+      file_url:
+        description: 'Link Telegram'
+        required: true
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Rclone
+        run: curl https://rclone.org/install.sh | sudo bash
+
+      - name: Setup Rclone Config
+        run: |
+          mkdir -p ~/.config/rclone
+          echo "${{ secrets.RCLONE_CONFIG }}" > ~/.config/rclone/rclone.conf
+
+      - name: Download & Push
+        run: |
+          # Download pake wget
+          wget "${{ github.event.inputs.file_url }}" -O file_target
+          # Langsung push pake rclone
+          rclone copy file_target mydrive:target_folder/ -P
